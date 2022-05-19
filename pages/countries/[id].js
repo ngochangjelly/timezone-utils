@@ -1,35 +1,31 @@
-import { Layout } from '../../components/layout';
+import Layout from '../../components/layout'
+import { getAllCountriesIds, getCountryData } from '../../lib/countries'
 
-import { getAllPostIds, getPostData } from '../../lib/countries';
-
+export default function Countries({ CountriesData }) {
+  return (
+    <Layout>
+      {CountriesData.title}
+      <br />
+      {CountriesData.id}
+      <br />
+      {CountriesData.date}
+    </Layout>
+  )
+}
 
 export async function getStaticPaths() {
-
-  const paths = getAllPostIds();
+  const paths = getAllCountriesIds()
   return {
     paths,
-    fallback: false,
-  };
+    fallback: false
+  }
 }
 
 export async function getStaticProps({ params }) {
-  const postData = getPostData(params.id);
+  const CountriesData = getCountryData(params.id)
   return {
     props: {
-      postData,
-    },
-  };
-}
-
-
-export default function Post({ postData }) {
-  return (
-    <Layout>
-      {postData.title}
-      <br />
-      {postData.id}
-      <br />
-      {postData.date}
-    </Layout>
-  );
+      CountriesData
+    }
+  }
 }

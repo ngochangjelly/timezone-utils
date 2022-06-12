@@ -1,21 +1,33 @@
+import { useEffect, useState } from 'react'
 import Layout from '../../components/layout'
-import { getAllCountriesIds, getCountryData } from '../../lib/countries'
+import { getAllCountriesIds } from '../../lib/countries'
+import moment from 'moment-timezone'
+import ClickToCopyInput from '../../components/CopiedInput'
 
-export default function Countries({ CountriesData }) {
+export default function Countries({ CountryData }) {
+  const { id } = CountryData || {}
+  const [time, setTime] = useState(moment());
+  useEffect(() => {
+    const interval = setInterval(() => setTime(Date.now()), 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  })
   return (
     <Layout>
-      {CountriesData.timezoneCode}
+      <div>{moment.tz.guess()}</div>
+      <div>{moment.tz(time, moment.tz.guess()).format('DD/MM/YYYY HH:mm')}</div>
+      {id}
+      <ClickToCopyInput text={moment.tz(time, id).format('DD/MM/YYYY HH:mm')} />
+      <ClickToCopyInput text={moment.tz(time, id).format('dddd')} />
+      <ClickToCopyInput text={moment.tz(time, id).unix()} isBold={true} suffix={'seconds since jan 01 1970. (utc)'} />
       <br />
-      {CountriesData.id}
-      <br />
-      {CountriesData.timezoneName}
     </Layout>
   )
 }
 
 export async function getStaticPaths() {
   const paths = getAllCountriesIds()
-  console.log("🚀 ~ file: [id].js ~ line 18 ~ getStaticPaths ~ paths", paths)
   return {
     paths,
     fallback: 'blocking'
@@ -23,10 +35,9 @@ export async function getStaticPaths() {
 }
 
 export async function getStaticProps({ params }) {
-  const CountriesData = getCountryData(params.id)
   return {
     props: {
-      CountriesData
+      CountryData: { id: params.id }
     }
   }
 }
